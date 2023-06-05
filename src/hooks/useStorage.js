@@ -5,7 +5,7 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 const useStorage = (file) => {
-  const [progress, setProgress] = useState(null);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
   const [url, setUrl] = useState(null);
 
@@ -15,6 +15,8 @@ const useStorage = (file) => {
     const collectionRef = collection(db, "images");
 
     const uploadTask = uploadBytesResumable(storageRef, file);
+
+    
     uploadTask.on(
       "state_changed",
       (snapshot) => {
@@ -25,14 +27,28 @@ const useStorage = (file) => {
       (error) => {
         setError(error);
       },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setUrl(downloadURL);
-          addDoc(collectionRef, {
+      //  () => {
+      //   getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          
+      //     addDoc(collectionRef, {
+      //       url: downloadURL,
+      //       createdAt: serverTimestamp()
+      //     });
+      //     setUrl(downloadURL);
+       
+      //   });
+      // }
+      async () => {
+        try {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          await addDoc(collectionRef, {
             url: downloadURL,
             createdAt: serverTimestamp(),
           });
-        });
+          setUrl(downloadURL);
+        } catch (error) {
+          setError(error);
+        }
       }
     );
   }, [file]);

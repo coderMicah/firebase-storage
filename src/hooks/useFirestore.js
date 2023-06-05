@@ -15,7 +15,8 @@ const useFirestore = (collectionName) => {
         images.push({ ...doc.data(), id: doc.id });
       });
       setDocs(images);
-      console.log(images);
+      console.log("After snapshot", images);
+
     });
 
     return () => unsub();

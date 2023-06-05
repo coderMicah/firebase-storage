@@ -17,7 +17,6 @@ function UpdloadForm() {
       setError("Please selected img file(png or jpeg)");
     }
     e.preventDefault();
-    console.log(selected);
   };
 
   return (
